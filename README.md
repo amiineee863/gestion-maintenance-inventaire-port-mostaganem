@@ -1,31 +1,33 @@
-🚀 How to Run the Project (Local Setup on Linux)
+Gestion de Maintenance & Inventaire - EP Mostaganem
 
-1️⃣ Create virtual environment
+Django web application for managing equipment, maintenance requests, and technical interventions.
+
+How to run the project on Linux:
+```
+1. Create virtual environment
 python3 -m venv env
 
-2️⃣ Activate virtual environment
+2. Activate virtual environment
 source env/bin/activate
 
-3️⃣ Install Django
+3. Install Django
 pip install django
 
-4️⃣ Install project dependencies
+4. Install project dependencies
 pip install -r requirements.txt
 
-5️⃣ Apply migrations
+5. Apply migrations
 python manage.py makemigrations
 python manage.py migrate
 
-6️⃣ Create admin user (superuser)
+6. Create admin user
 python manage.py createsuperuser
 
-7️⃣ Run the server
+7. Run the server
 python manage.py runserver
 
-8️⃣ Open in browser
+8. Open in browser
 http://127.0.0.1:8000/
 
-9️⃣ Admin panel:
+9. Admin panel
 http://127.0.0.1:8000/admin/
-
-
