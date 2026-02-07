@@ -1,0 +1,182 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Mes Demandes - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 mb-4">
+            <i class="bi bi-person-workspace"></i> Mes Demandes de Maintenance
+        </h1>
+    </div>
+</div>
+
+<!-- Statistiques -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-primary">{{ total }}</h3>
+            <p>Total Demandes</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-secondary">{{ en_attente }}</h3>
+            <p>En Attente</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-warning">{{ en_cours }}</h3>
+            <p>En Cours</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-info">{{ terminees }}</h3>
+            <p>Terminées</p>
+        </div>
+    </div>
+</div>
+
+<!-- Bouton Nouvelle Demande -->
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="{% url 'employe_creer_demande' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> Nouvelle Demande
+        </a>
+    </div>
+</div>
+
+<!-- Liste des Demandes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Historique de mes demandes</h5>
+            </div>
+            <div class="card-body">
+                {% if demandes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>N° Demande</th>
+                                    <th>Date</th>
+                                    <th>Équipement</th>
+                                    <th>Urgence</th>
+                                    <th>Statut</th>
+                                    <th>Technicien</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for demande in demandes %}
+                                <tr>
+                                    <td><strong>#{{ demande.pk }}</strong></td>
+                                    <td>{{ demande.date_creation|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <i class="bi bi-pc-display"></i> {{ demande.equipement.code_equipement }}
+                                        <br><small class="text-muted">{{ demande.equipement.nom }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-urgence-{{ demande.urgence }}">
+                                            {{ demande.get_urgence_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-statut-{{ demande.statut }}">
+                                            {{ demande.get_statut_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if demande.technicien %}
+                                            <i class="bi bi-person-badge"></i> {{ demande.technicien.get_full_name }}
+                                        {% else %}
+                                            <span class="text-muted">Non assigné</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <!-- Actions selon le statut -->
+                                        {% if demande.peut_etre_modifiee %}
+                                            <a href="{% url 'employe_modifier_demande' demande.pk %}" 
+                                               class="btn btn-sm btn-warning btn-action" 
+                                               title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if demande.peut_etre_supprimee %}
+                                            <a href="{% url 'employe_supprimer_demande' demande.pk %}" 
+                                               class="btn btn-sm btn-danger btn-action" 
+                                               title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if demande.peut_etre_validee %}
+                                            <a href="{% url 'employe_valider_demande' demande.pk %}" 
+                                               class="btn btn-sm btn-success btn-action" 
+                                               title="Valider">
+                                                <i class="bi bi-check-circle"></i> Valider
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if not demande.peut_etre_modifiee and not demande.peut_etre_supprimee and not demande.peut_etre_validee %}
+                                            <button class="btn btn-sm btn-secondary" disabled>
+                                                <i class="bi bi-eye"></i> Voir
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" class="bg-light">
+                                        <small><strong>Description :</strong> {{ demande.description|truncatewords:30 }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle"></i> 
+                        Vous n'avez aucune demande de maintenance. 
+                        <a href="{% url 'employe_creer_demande' %}" class="alert-link">Créer une demande</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Légende -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Légende des statuts</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><span class="badge bg-secondary">En attente</span> : Demande créée, en attente d'assignation</p>
+                        <p><span class="badge bg-info text-dark">Assignée</span> : Technicien assigné, en attente d'intervention</p>
+                        <p><span class="badge bg-warning text-dark">En cours</span> : Intervention en cours</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><span class="badge bg-primary">Terminée</span> : Réparation terminée, nécessite validation</p>
+                        <p><span class="badge bg-success">Validée</span> : Réparation validée par vous</p>
+                        <p><span class="badge bg-danger">Refusée</span> : Problème signalé</p>
+                    </div>
+                </div>
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    <strong>Important :</strong> Vous ne pouvez modifier ou supprimer une demande que si elle est en attente. 
+                    Lorsqu'une demande est terminée, vous devez la valider ou signaler un problème.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

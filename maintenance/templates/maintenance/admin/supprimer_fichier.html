@@ -1,0 +1,59 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Supprimer Fichier - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-trash"></i> Supprimer le Fichier
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Attention !</strong> Cette action est irréversible.
+                </div>
+
+                <h5 class="mb-3">Êtes-vous sûr de vouloir supprimer ce fichier ?</h5>
+                
+                <div class="card bg-light mb-4">
+                    <div class="card-body text-center">
+                        {% if fichier.est_image %}
+                            <img src="{{ fichier.fichier.url }}" class="img-fluid mb-3" style="max-height: 200px;" alt="Prévisualisation">
+                        {% else %}
+                            <i class="bi {{ fichier.icone }} text-primary" style="font-size: 4rem;"></i>
+                        {% endif %}
+                        
+                        <p><strong>Type :</strong> {{ fichier.get_type_fichier_display }}</p>
+                        <p><strong>Nom :</strong> {{ fichier.fichier.name }}</p>
+                        <p><strong>Taille :</strong> {{ fichier.taille_lisible }}</p>
+                        
+                        {% if fichier.description %}
+                        <p><strong>Description :</strong><br>
+                        <small>{{ fichier.description }}</small></p>
+                        {% endif %}
+                        
+                        <p><strong>Ajouté par :</strong> {{ fichier.ajoute_par.get_full_name }}<br>
+                        <small>{{ fichier.date_ajout|date:"d/m/Y à H:i" }}</small></p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_detail_intervention' fichier.intervention.pk %}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Non, annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash-fill"></i> Oui, supprimer définitivement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

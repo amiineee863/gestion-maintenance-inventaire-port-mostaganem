@@ -1,0 +1,56 @@
+{% extends 'maintenance/base.html' %}
+{% load static %}
+{% block title %}Importer Équipements - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="{% url 'admin_liste_equipements' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4 border-warning">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0"> <i class="bi bi-exclamation-triangle"></i> Attention</h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Vérifiez que la direction, catégorie et le bureau existent avant d'importer les équipements</li>
+                    <li>Utilisez un code unique et descriptif (catégorie-numéro)</li>
+                    <li>Renseignez tous les champs pour faciliter la maintenance</li>
+                    <li>La description technique aide les techniciens à mieux diagnostiquer les pannes</li>
+                </ul>
+                Téléchargez un exemplaire: 
+                <a href="{% static 'exemplaire.csv' %}" download class="btn btn-primary btn-sm">
+                            <i class="bi bi-download"></i> Exemplaire CSV
+                </a>
+            </div>
+        </div>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0"><i class="bi bi-file-earmark-arrow-up"></i> Importer des Équipements (CSV)</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Fichier CSV</label>
+                        <input type="file" name="csv_file" class="form-control" accept=".csv" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload"></i> Importer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

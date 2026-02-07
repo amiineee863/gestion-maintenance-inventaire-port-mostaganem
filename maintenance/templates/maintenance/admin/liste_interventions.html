@@ -1,0 +1,247 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Liste des Interventions - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6 mb-4">
+            <i class="bi bi-wrench-adjustable-circle"></i> Consultation des Interventions
+        </h1>
+    </div>
+</div>
+<!-- Filtres -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtres de Recherche</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="{{ form.technicien.id_for_label }}" class="form-label">Technicien</label>
+                        {{ form.technicien }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="{{ form.code_equipement.id_for_label }}" class="form-label">Code Équipement</label>
+                        {{ form.code_equipement }}
+                    </div>
+                    <div class="col-md-2">
+                        <label for="{{ form.type_reparation.id_for_label }}" class="form-label">Type Réparation</label>
+                        {{ form.type_reparation }}
+                    </div>
+                    <div class="col-md-2">
+                        <label for="{{ form.date_debut.id_for_label }}" class="form-label">Date Début</label>
+                        {{ form.date_debut }}
+                    </div>
+                    <div class="col-md-2">
+                        <label for="{{ form.date_fin.id_for_label }}" class="form-label">Date Fin</label>
+                        {{ form.date_fin }}
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-search"></i> Filtrer
+                        </button>
+                        <a href="{% url 'admin_liste_interventions' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Réinitialiser
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistiques -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ total_interventions }}</h3>
+                <p class="text-muted mb-0">Total Interventions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">
+                    {{ reparations_internes }}
+                </h3>
+                <p class="text-muted mb-0">Réparations Internes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">
+                    {{ reparations_externes }}
+                </h3>
+                <p class="text-muted mb-0">Réparations Externes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">
+                    {{documents_joints }}
+                </h3>
+                <p class="text-muted mb-0">Documents Joints</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des interventions -->
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-table"></i> Liste des interventions
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if interventions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                   
+                                    <th>Date</th>
+                                    <th>Demande</th>
+                                    <th>Équipement</th>
+                                    <th>Technicien</th>
+                                    <th>Type</th>
+                                    <th>Fichiers</th>
+                                    <th>Coût Pièces</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for intervention in interventions %}
+                                <tr>
+                                    
+                                    <td>
+                                        {{ intervention.date_intervention|date:"d/m/Y" }}<br>
+                                        <small class="text-muted">{{ intervention.date_intervention|date:"H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'admin_detail_intervention' intervention.pk %}" class="text-decoration-none">
+                                            Demande #{{ intervention.demande.pk }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <strong>{{ intervention.demande.equipement.code_equipement }}</strong><br>
+                                        <small class="text-muted">{{ intervention.demande.equipement.nom|truncatewords:3 }}</small>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-person-badge"></i> {{ intervention.demande.technicien.get_full_name }}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if intervention.type_reparation == 'INTERNE' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                            {{ intervention.get_type_reparation_display }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if intervention.fichiers.count > 0 %}
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-paperclip"></i> {{ intervention.fichiers.count }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if intervention.cout_total_pieces > 0 %}
+                                            <strong>{{ intervention.cout_total_pieces }} DA</strong>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'admin_detail_intervention' intervention.pk %}" 
+                                           class="btn btn-sm btn-primary" 
+                                           title="Voir les détails">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    {% if demandes.has_other_pages %}
+<div class="card-footer">
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center mb-0">
+            {% if interventions.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ interventions.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="bi bi-chevron-left"></i> Précédent
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-double-left"></i></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-left"></i> Précédent</span>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">
+                    Page {{ interventions.number }} / {{ interventions.paginator.num_pages }}
+                </span>
+            </li>
+            
+            {% if interventions.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ interventions.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        Suivant <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ interventions.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Suivant <i class="bi bi-chevron-right"></i></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-double-right"></i></span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+
+
+                {% else %}
+                    <div class="alert alert-info m-3 text-center">
+                        <i class="bi bi-info-circle"></i>
+                        Aucune intervention enregistrée.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

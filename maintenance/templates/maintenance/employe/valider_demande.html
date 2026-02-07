@@ -1,0 +1,112 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Valider Réparation #{{ demande.pk }} - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-clipboard-check"></i> Validation de la Réparation - Demande #{{ demande.pk }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Information :</strong> Le technicien a terminé l'intervention. 
+                    Merci de vérifier que le problème est bien résolu.
+                </div>
+
+                <!-- Informations de la demande -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3"><i class="bi bi-pc-display"></i> Équipement réparé</h5>
+                        <p><strong>Code :</strong> {{ demande.equipement.code_equipement }}</p>
+                        <p><strong>Nom :</strong> {{ demande.equipement.nom }}</p>
+                        <p class="mb-0"><strong>Marque :</strong> {{ demande.equipement.marque }}</p>
+                    </div>
+                </div>
+
+                <!-- Problème initial -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3"><i class="bi bi-bug"></i> Problème signalé</h5>
+                        <p class="mb-0">{{ demande.description }}</p>
+                    </div>
+                </div>
+
+                <!-- Rapport d'intervention -->
+                {% if demande.intervention %}
+                <div class="card border-success mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-file-text"></i> Rapport du Technicien</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong><i class="bi bi-person-badge"></i> Technicien :</strong> {{ demande.technicien.get_full_name }}</p>
+                        <p><strong><i class="bi bi-calendar"></i> Date d'intervention :</strong> {{ demande.intervention.date_intervention|date:"d/m/Y à H:i" }}</p>
+                        <p><strong><i class="bi bi-tools"></i> Type de réparation :</strong> 
+                            <span class="badge bg-info">{{ demande.intervention.get_type_reparation_display }}</span>
+                        </p>
+                        
+                        <hr>
+                        
+                        <h6><i class="bi bi-clipboard-check"></i> Actions effectuées :</h6>
+                        <div class="border p-3 bg-white rounded">
+                            {{ demande.intervention.details }}
+                        </div>
+
+                      
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Formulaire de validation -->
+                <div class="card border-warning">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0"><i class="bi bi-question-circle"></i> Le problème est-il résolu ?</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <button type="submit" name="action" value="valider" class="btn btn-success btn-lg w-100">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <br>
+                                        <strong>OUI, c'est réparé</strong>
+                                        <br>
+                                        <small>L'équipement fonctionne correctement</small>
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" name="action" value="refuser" class="btn btn-danger btn-lg w-100">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        <br>
+                                        <strong>NON, problème persistant</strong>
+                                        <br>
+                                        <small>Le problème n'est pas résolu</small>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="alert alert-warning mt-4 mb-0">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Important :</strong> Si vous signalez que le problème persiste, 
+                            un technicien sera à nouveau contacté pour intervenir.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'employe_dashboard' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour au tableau de bord
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

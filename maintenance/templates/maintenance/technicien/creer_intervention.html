@@ -1,0 +1,216 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}
+Créer Rapport - Demande #{{ demande.pk }} - EP Mostaganem
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .formset-row {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f8f9fa;
+    }
+
+    .delete-checkbox {
+        margin-top: 30px;
+    }
+
+    .fichier-row {
+        border: 2px dashed #0d6efd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        background-color: #f8f9ff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="{% url 'technicien_detail_demande' demande.pk %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour au détail
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- FORMULAIRE PRINCIPAL -->
+    <div class="col-lg-9">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    Créer Rapport d'Intervention - Demande #{{ demande.pk }}
+                </h4>
+            </div>
+
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- DETAILS -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-clipboard-check"></i> {{ form.details.label }} *
+                        </label>
+                        {{ form.details }}
+                        {% if form.details.errors %}
+                            <div class="invalid-feedback d-block">{{ form.details.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- TYPE -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-tools"></i> {{ form.type_reparation.label }} *
+                        </label>
+                        {{ form.type_reparation }}
+                        {% if form.type_reparation.errors %}
+                            <div class="invalid-feedback d-block">{{ form.type_reparation.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+
+                    <!-- PIECES -->
+                    <h5><i class="bi bi-gear-fill"></i> Pièces de rechange</h5>
+
+                    {{ formset.management_form }}
+                    <div id="pieces-container">
+                        {% for f in formset %}
+                        <div class="formset-row">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    {{ f.nom.label_tag }}
+                                    {{ f.nom }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ f.prix_unitaire.label_tag }}
+                                    {{ f.prix_unitaire }}
+                                </div>
+                                <div class="col-md-2">
+                                    {{ f.quantite.label_tag }}
+                                    {{ f.quantite }}
+                                </div>
+                                <div class="col-md-2">
+                                    {% if forloop.counter0 > 0 %}
+                                    <div class="delete-checkbox">
+                                        {{ f.DELETE }} Supprimer
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {{ f.id }}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="btn btn-outline-primary mb-4" id="add-piece">
+                        <i class="bi bi-plus-circle"></i> Ajouter une pièce
+                    </button>
+
+                    <hr>
+
+                    <!-- FICHIERS -->
+                    <h5><i class="bi bi-paperclip"></i> Documents joints</h5>
+
+                    {{ fichier_formset.management_form }}
+                    <div id="fichiers-container">
+                        {% for f in fichier_formset %}
+                        <div class="fichier-row">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    {{ f.fichier.label_tag }}
+                                    {{ f.fichier }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ f.type_fichier.label_tag }}
+                                    {{ f.type_fichier }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ f.description.label_tag }}
+                                    {{ f.description }}
+                                </div>
+                            </div>
+                            {{ f.id }}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="btn btn-outline-success mb-4" id="add-fichier">
+                        <i class="bi bi-plus-circle"></i> Ajouter un document
+                    </button>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'technicien_detail_demande' demande.pk %}" class="btn btn-secondary">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            Enregistrer le rapport
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- INFOS -->
+    <div class="col-lg-3">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                Informations
+            </div>
+            <div class="card-body">
+                <p><strong>Équipement :</strong><br>{{ demande.equipement }}</p>
+                <p><strong>Demandeur :</strong><br>{{ demande.employe.get_full_name }}</p>
+                <p><strong>Problème :</strong><br>{{ demande.description|truncatewords:20 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    function cloneForm(containerId, totalFormsName, prefix) {
+        const container = document.getElementById(containerId);
+        const totalForms = document.querySelector(`[name="${totalFormsName}"]`);
+        const formCount = parseInt(totalForms.value);
+        const newForm = container.children[0].cloneNode(true);
+
+        newForm.innerHTML = newForm.innerHTML
+            .replace(new RegExp(`${prefix}-0-`, 'g'), `${prefix}-${formCount}-`)
+            .replace(new RegExp(`${prefix}_0_`, 'g'), `${prefix}_${formCount}_`);
+
+        newForm.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.type !== 'hidden' && el.type !== 'checkbox') {
+                el.value = '';
+            }
+            if (el.type === 'checkbox') {
+                el.checked = false;
+            }
+        });
+
+        container.appendChild(newForm);
+        totalForms.value = formCount + 1;
+    }
+
+    document.getElementById('add-piece').onclick = () => {
+        cloneForm('pieces-container', 'pieces-TOTAL_FORMS', 'pieces');
+    };
+
+    document.getElementById('add-fichier').onclick = () => {
+        cloneForm('fichiers-container', 'fichiers-TOTAL_FORMS', 'fichiers');
+    };
+
+});
+</script>
+{% endblock %}

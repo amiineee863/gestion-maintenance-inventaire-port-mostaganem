@@ -1,0 +1,195 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Nouvelle Demande - EP Mostaganem{% endblock %}
+
+{% block extra_css %}
+<style>
+    .barcode-input {
+        font-family: 'Courier New', monospace;
+        font-size: 1.5rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+    .scanner-icon {
+        font-size: 4rem;
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    
+    <div class="col-lg-8">
+        <div class="card">
+
+            
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Nouvelle Demande de Maintenance
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="demande-form">
+                    {% csrf_token %}
+                    
+                    
+                    <div class="mb-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-upc-scan scanner-icon"></i>
+                        </div>
+                        
+                        <label for="{{ form.code_equipement.id_for_label }}" class="form-label">
+                            <i class="bi bi-upc"></i> {{ form.code_equipement.label }} *
+                        </label>
+                        {{ form.code_equipement }}
+                        {% if form.code_equipement.errors %}
+                            <div class="alert alert-danger mt-2">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                {{ form.code_equipement.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> 
+                            Vérifiez que l'équipement appartient bien à votre direction
+                        </small>
+
+                         <!-- Information sur la direction -->
+                        {% if user.direction %}
+                        <div class="card mt-3 border-info">
+                            <div class="card-body bg-dark text-white text-center">
+                                <p class="mb-0">
+                                    <i class="bi bi-building text-info"></i>
+                                    <strong>Votre direction :</strong> {{ user.direction.nom }}
+                                </p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="card mt-3 border-warning">
+                            <div class="card-body text-center">
+                                <p class="mb-0 text-warning">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <strong>Attention :</strong> Aucune direction n'est associée à votre compte. 
+                                    Veuillez contacter l'administrateur.
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        
+                    </div>
+
+                    <!-- Aperçu de l'équipement -->
+                    <div id="equipment-preview" class="card bg-light mb-4" style="display: none;">
+                        <div class="card-body">
+                            <h6 class="text-success">
+                                <i class="bi bi-check-circle"></i> Équipement trouvé :
+                            </h6>
+                            <div id="equipment-details"></div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.urgence.id_for_label }}" class="form-label">
+                            <i class="bi bi-exclamation-triangle"></i> {{ form.urgence.label }} *
+                        </label>
+                        {{ form.urgence }}
+                        {% if form.urgence.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.urgence.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            <strong>Haute :</strong> Urgence critique (production bloquée)<br>
+                            <strong>Moyenne :</strong> Gêne importante mais contournable<br>
+                            <strong>Basse :</strong> Problème mineur
+                        </small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            <i class="bi bi-chat-left-text"></i> {{ form.description.label }} *
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Décrivez le problème avec le maximum de détails (symptômes, messages d'erreur, etc.)
+                        </small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Information :</strong> Votre demande sera automatiquement prise en charge 
+                        par notre équipe technique. Vous recevrez une notification par email dès qu'un 
+                        technicien sera assigné et lorsque la réparation sera terminée.
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'employe_dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send"></i> Soumettre la demande
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Conseils -->
+        <div class="card mt-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Conseils pour une demande efficace</h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Utilisez le lecteur de code-barres pour scanner le code sur l'équipement</li>
+                    <li>Vérifiez que l'équipement appartient bien à votre direction</li>
+                    <li>Notez tous les messages d'erreur affichés</li>
+                    <li>Indiquez quand le problème est apparu</li>
+                    <li>Mentionnez si le problème est permanent ou intermittent</li>
+                    <li>Précisez les actions déjà tentées pour résoudre le problème</li>
+                </ul>
+            </div>
+        </div>
+
+       
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const codeInput = document.getElementById('id_code_equipement');
+    
+    // Mettre le focus sur le champ au chargement
+    if (codeInput) {
+        codeInput.focus();
+    }
+    
+    // Soumettre automatiquement après scan (si le code se termine par Enter)
+    codeInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            // Optionnel: vérifier l'équipement avant soumission
+        }
+    });
+    
+    // Convertir en majuscules automatiquement
+    codeInput.addEventListener('input', function(e) {
+        this.value = this.value.toUpperCase();
+    });
+});
+</script>
+{% endblock %}

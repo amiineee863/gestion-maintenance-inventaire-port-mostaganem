@@ -1,0 +1,208 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Détail Demande #{{ demande.pk }} - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <a href="{% url 'technicien_dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à mes interventions
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Informations de la demande -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-wrench"></i> Demande #{{ demande.pk }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong><i class="bi bi-calendar"></i> Date de création :</strong><br>
+                        {{ demande.date_creation|date:"d/m/Y à H:i" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><i class="bi bi-flag"></i> Statut :</strong><br>
+                        <span class="badge badge-statut-{{ demande.statut }} fs-6">
+                            {{ demande.get_statut_display }}
+                        </span></p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong><i class="bi bi-exclamation-triangle"></i> Urgence :</strong><br>
+                        <span class="badge badge-urgence-{{ demande.urgence }} fs-6">
+                            {{ demande.get_urgence_display }}
+                        </span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><i class="bi bi-person"></i> Demandeur :</strong><br>
+                        {{ demande.employe.get_full_name }}</p>
+                        {% if demande.employe.email %}
+                            <small><i class="bi bi-envelope"></i> {{ demande.employe.email }}</small><br>
+                        {% endif %}
+                        {% if demande.employe.telephone %}
+                            <small><i class="bi bi-telephone"></i> {{ demande.employe.telephone }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h5 class="mb-3"><i class="bi bi-pc-display"></i> Équipement concerné</h5>
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <p class="mb-2"><strong>Code :</strong> {{ demande.equipement.code_equipement }}</p>
+                        <p class="mb-2"><strong>Nom :</strong> {{ demande.equipement.nom }}</p>
+                        <p class="mb-2"><strong>Marque :</strong> {{ demande.equipement.marque }}</p>
+                        <p class="mb-2"><strong>Catégorie :</strong> {{ demande.equipement.categorie.nom }}</p>
+                        <p class="mb-2"><strong>Bureau :</strong> {{ demande.equipement.bureau.nom }} 
+                            ({{ demande.equipement.bureau.direction.nom }})</p>
+                        {% if demande.equipement.description_technique %}
+                            <p class="mb-0"><strong>Spécifications :</strong><br>
+                            <small>{{ demande.equipement.description_technique }}</small></p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <h5 class="mb-3"><i class="bi bi-chat-left-text"></i> Description du problème</h5>
+                <div class="alert alert-warning">
+                    {{ demande.description }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rapport d'intervention -->
+        {% if intervention %}
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Rapport d'Intervention</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Date d'intervention :</strong> {{ intervention.date_intervention|date:"d/m/Y à H:i" }}</p>
+                <p><strong>Type de réparation :</strong> 
+                    <span class="badge bg-success">{{ intervention.get_type_reparation_display }}</span>
+                </p>
+                
+                <hr>
+                
+                <h6><i class="bi bi-clipboard-check"></i> Détails de l'intervention :</h6>
+                <p class="border p-3 bg-light">{{ intervention.details }}</p>
+                
+                {% if intervention.pieces.exists %}
+                <hr>
+                <h6><i class="bi bi-tools"></i> Pièces de rechange utilisées :</h6>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Pièce</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for piece in intervention.pieces.all %}
+                        <tr>
+                            <td>{{ piece.nom }}</td>
+                            <td>{{ piece.prix_unitaire }} DA</td>
+                            <td>{{ piece.quantite }}</td>
+                            <td><strong>{{ piece.cout_total }} DA</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table">
+                            <th colspan="3" class="text-end">Coût total des pièces :</th>
+                            <th>{{ intervention.cout_total_pieces }} DA</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                {% endif %}
+                
+                <div class="mt-3">
+                    <a href="{% url 'technicien_modifier_intervention' demande.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Modifier le rapport
+                    </a>
+
+                    <a href="{% url 'export_intervention_pdf' intervention.pk %}" class="btn btn-danger btn-sm">
+                       <i class="bi bi-filetype-pdf"></i> Export PDF
+                    </a>
+
+                    <a href="{% url 'export_intervention_word' intervention.pk %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-file-word"></i> Export Word
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Actions -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-gear"></i> Actions</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="mb-3">Changer le statut</h6>
+                <form method="post" action="{% url 'technicien_changer_statut' demande.pk %}">
+                    {% csrf_token %}
+                    
+                    {% if demande.statut == 'ASSIGNEE' %}
+                        <button type="submit" name="statut" value="EN_COURS" 
+                                class="btn btn-warning w-100 mb-2">
+                            <i class="bi bi-play-circle"></i> Commencer l'intervention
+                        </button>
+                    {% endif %}
+                    
+                    {% if demande.statut == 'EN_COURS' %}
+                        <button type="submit" name="statut" value="TERMINEE" 
+                                class="btn btn-success w-100 mb-2">
+                            <i class="bi bi-check-circle"></i> Marquer comme terminée
+                        </button>
+                    {% endif %}
+                </form>
+                
+                <hr>
+                
+                <h6 class="mb-3">Rapport d'intervention</h6>
+                {% if not intervention %}
+                    <a href="{% url 'technicien_creer_intervention' demande.pk %}" 
+                       class="btn btn-primary w-100">
+                        <i class="bi bi-file-earmark-plus"></i> Créer un rapport
+                    </a>
+                {% else %}
+                    <a href="{% url 'technicien_modifier_intervention' demande.pk %}" 
+                       class="btn btn-warning w-100">
+                        <i class="bi bi-pencil"></i> Modifier le rapport
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Guide -->
+        <div class="card border-info">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Workflow</h6>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0 small">
+                    <li>Démarrer l'intervention (En cours)</li>
+                    <li>Créer/Compléter le rapport</li>
+                    <li>Ajouter les pièces utilisées</li>
+                    <li>Marquer comme terminée</li>
+                    <li>L'employé reçoit un email</li>
+                    <li>L'employé valide ou signale un problème</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Mes Interventions - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 mb-4">
+            <i class="bi bi-wrench-adjustable"></i> Mes Interventions
+        </h1>
+    </div>
+</div>
+
+<!-- Statistiques -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-primary">{{ total }}</h3>
+            <p>Total Demandes</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-info">{{ assignees }}</h3>
+            <p>Assignées</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-warning">{{ en_cours }}</h3>
+            <p>En Cours</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <h3 class="text-success">{{ terminees }}</h3>
+            <p>Terminées</p>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des Demandes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Mes demandes assignées</h5>
+            </div>
+            <div class="card-body">
+                {% if demandes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>N° Demande</th>
+                                    <th>Date</th>
+                                    <th>Équipement</th>
+                                    <th>Employé</th>
+                                    <th>Urgence</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for demande in demandes %}
+                                <tr class="{% if demande.urgence == 'HAUTE' %}table-danger{% elif demande.urgence == 'MOYENNE' %}table-warning{% endif %}">
+                                    <td><strong>#{{ demande.pk }}</strong></td>
+                                    <td>{{ demande.date_creation|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <strong>{{ demande.equipement.code_equipement }}</strong><br>
+                                        <small class="text-muted">
+                                            {{ demande.equipement.nom }}<br>
+                                            {{ demande.equipement.marque }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-person"></i> {{ demande.employe.get_full_name }}<br>
+                                        {% if demande.employe.telephone %}
+                                            <small class="text-muted">
+                                                <i class="bi bi-telephone"></i> {{ demande.employe.telephone }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-urgence-{{ demande.urgence }}">
+                                            {% if demande.urgence == 'HAUTE' %}
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {% endif %}
+                                            {{ demande.get_urgence_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-statut-{{ demande.statut }}">
+                                            {{ demande.get_statut_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'technicien_detail_demande' demande.pk %}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> Détails
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" class="bg-light">
+                                        <small><strong>Problème :</strong> {{ demande.description|truncatewords:40 }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle"></i> 
+                        Aucune demande ne vous a été assignée pour le moment.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Guide d'utilisation -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-dark">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Guide d'utilisation</h6>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li><strong>Consulter les détails</strong> : Cliquez sur "Détails" pour voir la demande complète</li>
+                    <li><strong>Changer le statut</strong> : Passez de "Assignée" à "En cours" puis à "Terminée"</li>
+                    <li><strong>Créer un rapport</strong> : Renseignez les détails de l'intervention et les pièces utilisées</li>
+                    <li><strong>Notification</strong> : Un email sera envoyé automatiquement à l'employé quand vous marquez la demande comme "Terminée"</li>
+                </ol>
+                <div class="alert alert-warning mb-0 mt-3">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    <strong>Priorité :</strong> Les demandes avec urgence <span class="badge bg-danger">HAUTE</span> 
+                    doivent être traitées en priorité.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

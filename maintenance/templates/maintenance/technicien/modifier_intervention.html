@@ -1,0 +1,225 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Modifier Rapport - Demande #{{ demande.pk }} - EP Mostaganem{% endblock %}
+
+{% block extra_css %}
+<style>
+    .formset-row {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f8f9fa;
+    }
+    .delete-checkbox {
+        margin-top: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <a href="{% url 'technicien_detail_demande' demande.pk %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour au détail
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square"></i> Modifier Rapport d'Intervention - Demande #{{ demande.pk }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Modification du rapport :</strong> Vous pouvez mettre à jour les détails 
+                    de votre intervention et la liste des pièces utilisées.
+                </div>
+
+                <form method="post" id="intervention-form">
+                    {% csrf_token %}
+                    
+                    <!-- Détails de l'intervention -->
+                    <div class="mb-4">
+                        <label for="{{ form.details.id_for_label }}" class="form-label">
+                            <i class="bi bi-clipboard-check"></i> {{ form.details.label }} *
+                        </label>
+                        {{ form.details }}
+                        {% if form.details.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.details.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Type de réparation -->
+                    <div class="mb-4">
+                        <label for="{{ form.type_reparation.id_for_label }}" class="form-label">
+                            <i class="bi bi-tools"></i> {{ form.type_reparation.label }} *
+                        </label>
+                        {{ form.type_reparation }}
+                        {% if form.type_reparation.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.type_reparation.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Pièces de rechange -->
+                    <h5 class="mb-3">
+                        <i class="bi bi-gear-fill"></i> Pièces de Rechange Utilisées
+                    </h5>
+
+                    {{ formset.management_form }}
+                    
+                    <div id="formset-container">
+                        {% for form in formset %}
+                        <div class="formset-row">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <label for="{{ form.nom.id_for_label }}" class="form-label">
+                                        Nom de la pièce
+                                    </label>
+                                    {{ form.nom }}
+                                    {% if form.nom.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.nom.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="{{ form.prix_unitaire.id_for_label }}" class="form-label">
+                                        Prix unitaire (DA)
+                                    </label>
+                                    {{ form.prix_unitaire }}
+                                    {% if form.prix_unitaire.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.prix_unitaire.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label for="{{ form.quantite.id_for_label }}" class="form-label">
+                                        Quantité
+                                    </label>
+                                    {{ form.quantite }}
+                                    {% if form.quantite.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.quantite.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <div class="delete-checkbox">
+                                        {{ form.DELETE }}
+                                        <label for="{{ form.DELETE.id_for_label }}" class="form-label">
+                                            <i class="bi bi-trash"></i> Supprimer
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {{ form.id }}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="btn btn-outline-primary mb-4" id="add-piece">
+                        <i class="bi bi-plus-circle"></i> Ajouter une pièce
+                    </button>
+
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'technicien_detail_demande' demande.pk %}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="bi bi-check-circle"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations -->
+    <div class="col-lg-4">
+        <div class="card border-info">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historique</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Date d'intervention :</strong><br>
+                {{ intervention.date_intervention|date:"d/m/Y à H:i" }}</p>
+                
+                <p><strong>Équipement :</strong><br>
+                {{ demande.equipement.code_equipement }}<br>
+                <small>{{ demande.equipement.nom }}</small></p>
+                
+                <p class="mb-0"><strong>Statut actuel :</strong><br>
+                <span class="badge badge-statut-{{ demande.statut }}">
+                    {{ demande.get_statut_display }}
+                </span></p>
+            </div>
+        </div>
+
+        <div class="card mt-3 border-warning">
+            <div class="card-header bg-warning">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Attention</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0 small">
+                    Cochez la case "Supprimer" pour retirer une pièce de la liste. 
+                    Les modifications seront enregistrées après avoir cliqué sur le bouton "Enregistrer".
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-piece');
+    const container = document.getElementById('formset-container');
+    const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+    
+    addButton.addEventListener('click', function() {
+        const formIdx = parseInt(totalForms.value);
+        const emptyForm = container.children[0].cloneNode(true);
+        
+        // Mettre à jour les attributs avec le nouvel index
+        emptyForm.innerHTML = emptyForm.innerHTML.replace(/-\d+-/g, `-${formIdx}-`);
+        emptyForm.innerHTML = emptyForm.innerHTML.replace(/_\d+_/g, `_${formIdx}_`);
+        
+        // Vider les valeurs
+        emptyForm.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(input => {
+            if (input.type === 'checkbox') {
+                input.checked = false;
+            } else {
+                input.value = '';
+            }
+        });
+        
+        // Réinitialiser l'ID hidden
+        const idInput = emptyForm.querySelector('[name$="-id"]');
+        if (idInput) idInput.value = '';
+        
+        container.appendChild(emptyForm);
+        totalForms.value = formIdx + 1;
+    });
+});
+</script>
+{% endblock %}

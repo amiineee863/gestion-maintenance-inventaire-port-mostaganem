@@ -1,0 +1,177 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Ajouter Équipement - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="{% url 'admin_liste_equipements' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à l'inventaire
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Ajouter un Nouvel Équipement
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Identification -->
+                    <h5 class="mb-3 text-primary">
+                        <i class="bi bi-tag"></i> Identification
+                    </h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="{{ form.code_equipement.id_for_label }}" class="form-label">
+                                Code Équipement *
+                            </label>
+                            {{ form.code_equipement }}
+                            {% if form.code_equipement.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.code_equipement.errors }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ex: PC-001, IMP-042</small>
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <label for="{{ form.nom.id_for_label }}" class="form-label">
+                                Nom de l'équipement *
+                            </label>
+                            {{ form.nom }}
+                            {% if form.nom.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.nom.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.marque.id_for_label }}" class="form-label">
+                                Marque *
+                            </label>
+                            {{ form.marque }}
+                            {% if form.marque.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.marque.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.date_acquisition.id_for_label }}" class="form-label">
+                                Date d'acquisition *
+                            </label>
+                            {{ form.date_acquisition }}
+                            {% if form.date_acquisition.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date_acquisition.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Classification -->
+                    <h5 class="mb-3 text-success">
+                        <i class="bi bi-diagram-3"></i> Classification
+                    </h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.categorie.id_for_label }}" class="form-label">
+                                Catégorie
+                            </label>
+                            {{ form.categorie }}
+                            {% if form.categorie.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.categorie.errors }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ex: Ordinateur, Imprimante, etc.</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.bureau.id_for_label }}" class="form-label">
+                                Bureau
+                            </label>
+                            {{ form.bureau }}
+                            {% if form.bureau.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.bureau.errors }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Emplacement de l'équipement</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Description technique -->
+                    <h5 class="mb-3 text-info">
+                        <i class="bi bi-file-text"></i> Détails Techniques
+                    </h5>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.description_technique.id_for_label }}" class="form-label">
+                            Description technique
+                        </label>
+                        {{ form.description_technique }}
+                        {% if form.description_technique.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description_technique.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Spécifications : processeur, RAM, disque dur, etc.
+                        </small>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Note :</strong> Le code équipement doit être unique. 
+                        Utilisez une nomenclature cohérente (ex: PC-001, IMP-001, SW-001).
+                    </div>
+
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_liste_equipements' %}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Enregistrer l'équipement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Conseils -->
+        <div class="card mt-4 border-warning">
+            <div class="card-header bg-warning">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Conseils</h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Utilisez un code unique et descriptif (catégorie-numéro)</li>
+                    <li>Renseignez tous les champs pour faciliter la maintenance</li>
+                    <li>Vérifiez que la catégorie et le bureau existent avant de créer l'équipement</li>
+                    <li>La description technique aide les techniciens à mieux diagnostiquer les pannes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

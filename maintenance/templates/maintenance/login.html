@@ -1,0 +1,96 @@
+{% extends 'maintenance/base.html' %}
+
+{% block title %}Connexion - EP Mostaganem{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-dark text-white text-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-shield-lock"></i> Connexion
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Nom d'utilisateur ou mot de passe incorrect.
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            <i class="bi bi-person"></i> Nom d'utilisateur
+                        </label>
+                        <input type="text" 
+                               name="username" 
+                               id="id_username"
+                               class="form-control form-control-lg" 
+                               placeholder="Entrez votre nom d'utilisateur"
+                               required 
+                               autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">
+                            <i class="bi bi-lock"></i> Mot de passe
+                        </label>
+                        <input type="password" 
+                               name="password" 
+                               id="id_password"
+                               class="form-control form-control-lg" 
+                               placeholder="Entrez votre mot de passe"
+                               required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-dark btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+            </div>
+            <div class="card-footer text-center text-muted">
+                <small>© 2026 EPM - Tous droits réservés</small>
+            </div>
+        </div>
+
+        <!-- Comptes de démonstration -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title text-center mb-3">
+                    <i class="bi bi-info-circle"></i> Comptes de démonstration
+                </h6>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <small>
+                            <strong>Admin</strong><br>
+                            admin / admin123
+                        </small>
+                    </div>
+                    <div class="col-4">
+                        <small>
+                            <strong>Technicien</strong><br>
+                            karim / tech123
+                        </small>
+                    </div>
+                    <div class="col-4">
+                        <small>
+                            <strong>Employé</strong><br>
+                            ahmed / emp123
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
