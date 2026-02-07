@@ -3,16 +3,10 @@
 ## 📋 Informations Projet
 
 **Application développée pour :** Entreprise Portuaire de Mostaganem  
-**Développeur :** HADJ Mohamed Elamine  
+**Développeurs :** HADJ ALI Mohamed Elamine, ABBES Abdelkader
 **Établissement :** École Nationale Polytechnique d'Oran (ENPO)  
 **Année :** 2025-2026  
 
-### 📞 Contact pour Maintenance & Support
-
-- **Email :** hadjali.mohamed.elamine@gmail.com
-- **Téléphone :** +213 656 410 106
-
----
 
 ## 🎯 Présentation
 
@@ -601,7 +595,7 @@ sudo -u postgres psql maintenance_db
 
 Pour toute assistance, bug, ou demande d'évolution :
 
-- **Développeur :** HADJ Mohamed Elamine
+- **Développeur :** HADJ ALI Mohamed Elamine
 - **Email :** hadjali.mohamed.elamine@gmail.com
 - **Téléphone :** +213 656 410 106
 
