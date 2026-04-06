@@ -20,11 +20,7 @@ staticfiles/
 media/*
 !media/.gitkeep
 
-# ======================
-# Static — keep folder, ignore contents
-# ======================
-static/*
-!static/.gitkeep
+
 
 # ======================
 # Migrations cache
