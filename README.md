@@ -3,7 +3,7 @@ Gestion de Maintenance & Inventaire - EP Mostaganem
 Django web application for managing equipment, maintenance requests, and technical interventions.
 How to run the project using Docker:
 ```
-git clone <your-repo-url>
+git clone https://github.com/amiineee863/gestion-maintenance-inventaire-port-mostaganem.git
 cd maintenance_ep_mostaganem
 docker compose up --build
 Go to http://localhost:8000
