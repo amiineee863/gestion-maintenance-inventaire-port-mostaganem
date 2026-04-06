@@ -9,7 +9,7 @@ docker compose up --build
 Go to http://localhost:8000
 Login with:
 Username: admin
-Password: admin123
+Password: admin
 ```
 How to run the project on Linux:
 ```
