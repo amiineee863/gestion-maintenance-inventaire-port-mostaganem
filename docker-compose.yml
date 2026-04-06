@@ -9,8 +9,9 @@ services:
     environment:
       - DEBUG=1
       - DJANGO_SUPERUSER_USERNAME=admin
-      - DJANGO_SUPERUSER_PASSWORD=admin123
+      - DJANGO_SUPERUSER_PASSWORD=admin
       - DJANGO_SUPERUSER_EMAIL=admin@admin.com
+      - DJANGO_SUPERUSER_ROLE=ADMIN
 
 volumes:
   media_data:

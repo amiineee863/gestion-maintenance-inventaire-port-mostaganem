@@ -18,4 +18,4 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 # Run migrations and start server
-CMD ["sh", "-c", "python manage.py migrate && python manage.py createsuperuser --noinput || true && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py createsuperuser --noinput || true && python manage.py shell -c \"from maintenance.models import User; u = User.objects.get(username='admin'); u.role = 'ADMIN'; u.save()\" && python manage.py runserver 0.0.0.0:8000"]
