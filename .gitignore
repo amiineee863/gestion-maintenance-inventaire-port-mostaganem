@@ -10,9 +10,21 @@ __pycache__/
 # Django
 # ======================
 db.sqlite3
-media/
+*.sqlite3-journal
 staticfiles/
 *.log
+
+# ======================
+# Media — keep folder, ignore contents
+# ======================
+media/*
+!media/.gitkeep
+
+# ======================
+# Static — keep folder, ignore contents
+# ======================
+static/*
+!static/.gitkeep
 
 # ======================
 # Migrations cache
@@ -49,8 +61,3 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
-
-# ======================
-# SQLite backups
-# ======================
-*.sqlite3-journal

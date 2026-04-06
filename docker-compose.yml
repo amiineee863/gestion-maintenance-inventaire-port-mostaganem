@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app                # live code sync + db.sqlite3 persists on your machine
+      - media_data:/app/media # persist uploaded media files
+    environment:
+      - DEBUG=1
+
+volumes:
+  media_data:
