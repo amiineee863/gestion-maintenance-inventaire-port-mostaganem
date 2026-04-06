@@ -4,10 +4,13 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app                # live code sync + db.sqlite3 persists on your machine
-      - media_data:/app/media # persist uploaded media files
+      - .:/app
+      - media_data:/app/media
     environment:
       - DEBUG=1
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=admin123
+      - DJANGO_SUPERUSER_EMAIL=admin@admin.com
 
 volumes:
   media_data:
